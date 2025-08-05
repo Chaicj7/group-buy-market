@@ -4,7 +4,7 @@ import com.chaicj.infrastructure.dao.po.SCSkuActivity;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface SCSkuActivityDao {
+public interface ScSkuActivityDao {
 
     SCSkuActivity querySCSkuActivityBySCGoodsId(SCSkuActivity scSkuActivityReq);
 

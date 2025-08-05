@@ -23,7 +23,6 @@ public class EndNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, 
         log.info("拼团商品查询试算服务-EndNode userId:{} requestParameter:{}", requestParameter.getUserId(), JSON.toJSONString(requestParameter));
         SkuVO skuVO = dynamicContext.getSkuVO();
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
-        GroupBuyDiscountVO groupBuyDiscount = groupBuyActivityDiscountVO.getGroupBuyDiscount();
         TrialBalanceEntity trialBalance = TrialBalanceEntity.builder()
                 .goodsId(skuVO.getGoodsId())
                 .goodsName(skuVO.getGoodsName())
@@ -32,8 +31,8 @@ public class EndNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, 
                 .targetCount(groupBuyActivityDiscountVO.getTarget())
                 .startTime(groupBuyActivityDiscountVO.getStartTime())
                 .endTime(groupBuyActivityDiscountVO.getEndTime())
-                .isVisible(false)
-                .isEnable(false)
+                .isVisible(dynamicContext.isVisible())
+                .isEnable(dynamicContext.isEnable())
                 .build();
         return trialBalance;
     }

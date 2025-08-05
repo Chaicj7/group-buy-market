@@ -4,12 +4,14 @@ import com.chaicj.domain.activity.adapter.repository.IActivityRepository;
 import com.chaicj.domain.activity.model.valobj.*;
 import com.chaicj.infrastructure.dao.GroupBuyActivityDao;
 import com.chaicj.infrastructure.dao.GroupBuyDiscountDao;
-import com.chaicj.infrastructure.dao.SCSkuActivityDao;
+import com.chaicj.infrastructure.dao.ScSkuActivityDao;
 import com.chaicj.infrastructure.dao.SkuDao;
 import com.chaicj.infrastructure.dao.po.GroupBuyActivity;
 import com.chaicj.infrastructure.dao.po.GroupBuyDiscount;
 import com.chaicj.infrastructure.dao.po.SCSkuActivity;
 import com.chaicj.infrastructure.dao.po.Sku;
+import com.chaicj.infrastructure.redis.IRedisService;
+import org.redisson.api.RBitSet;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,11 +26,14 @@ public class ActivityRepository implements IActivityRepository {
     @Resource
     private GroupBuyDiscountDao groupBuyDiscountDao;
     @Resource
-    private SCSkuActivityDao scSkuActivityDao;
+    private ScSkuActivityDao scSkuActivityDao;
+    @Resource
+    private IRedisService redisService;
 
     @Override
     public SkuVO querySkuByGoodsId(String goodsId) {
         Sku sku = skuDao.queryByGoodsId(goodsId);
+        if (sku == null) return null;
         return SkuVO.builder()
                 .goodsId(sku.getGoodsId())
                 .goodsName(sku.getGoodsName())
@@ -83,5 +88,13 @@ public class ActivityRepository implements IActivityRepository {
                 .goodsId(scSkuActivityRes.getGoodsId())
                 .activityId(scSkuActivityRes.getActivityId())
                 .build();
+    }
+
+    @Override
+    public boolean isTagCrowdRange(String tagId, String userId) {
+        RBitSet bitSet = redisService.getBitSet(tagId);
+        if (!bitSet.isExists()) return true;
+        // 判断用户是否存在人群中
+        return bitSet.get(redisService.getIndexFromUserId(userId));
     }
 }
