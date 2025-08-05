@@ -26,6 +26,29 @@
     <select id="queryAll" resultMap="resultMap">
         select * from group_buy_activity
     </select>
+    <select id="queryValidGroupBuyActivity" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyActivity" resultMap="resultMap">
+        select activity_id,
+               activity_name,
+               source,
+               channel,
+               goods_id,
+               discount_id,
+               group_type,
+               take_limit_count,
+               target,
+               valid_time,
+               status,
+               start_time,
+               end_time,
+               tag_id,
+               tag_scope,
+               create_time,
+               update_time
+        from group_buy_activity
+        where source = #{source}
+          and channel = #{channel}
+        order by id desc limit 1
+    </select>
 
 
 </mapper>

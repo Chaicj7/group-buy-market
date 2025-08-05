@@ -9,7 +9,7 @@
         <result column="discount_desc" property="discountDesc"/>
         <result column="discount_type" property="discountType"/>
         <result column="market_plan" property="marketPlan"/>
-        <result column="expr" property="expr"/>
+        <result column="market_expr" property="marketExpr"/>
         <result column="tag_id" property="tagId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -17,6 +17,20 @@
 
     <select id="queryAll" resultMap="resultMap">
         select * from group_buy_discount
+    </select>
+
+    <select id="queryGroupBuyActivityDiscountByDiscountId" parameterType="java.lang.String" resultMap="resultMap">
+        select discount_id,
+               discount_name,
+               discount_desc,
+               discount_type,
+               market_plan,
+               market_expr,
+               tag_id,
+               create_time,
+               update_time
+        from group_buy_discount
+        where discount_id = #{discountId}
     </select>
 
 

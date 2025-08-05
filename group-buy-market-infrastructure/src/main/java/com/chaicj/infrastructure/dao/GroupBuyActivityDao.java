@@ -9,4 +9,7 @@ import java.util.List;
 public interface GroupBuyActivityDao {
 
     List<GroupBuyActivity> queryAll();
+
+    GroupBuyActivity queryValidGroupBuyActivity(GroupBuyActivity groupBuyActivityReq);
+
 }
