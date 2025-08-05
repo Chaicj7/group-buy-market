@@ -9,4 +9,6 @@ public interface ITagRepository {
     void addCrowdTagsUserId(String tagId, String userId);
 
     void updateCrowdTagsStatistics(String tagId, Integer size);
+
+    boolean queryCrowdTagsDetail(String userId, String tagId);
 }

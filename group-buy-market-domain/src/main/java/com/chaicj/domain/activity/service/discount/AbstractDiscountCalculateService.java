@@ -2,13 +2,17 @@ package com.chaicj.domain.activity.service.discount;
 
 import com.chaicj.domain.activity.model.valobj.DiscountTypeEnum;
 import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
+import com.chaicj.domain.tag.adapter.repository.ITagRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 @Slf4j
-public abstract class AbstractDiscountCalculateService implements IDiscountCalculateService{
+public abstract class AbstractDiscountCalculateService implements IDiscountCalculateService {
 
+    @Resource
+    private ITagRepository tagRepository;
 
     @Override
     public BigDecimal calculate(String userId, BigDecimal originalPrice, GroupBuyDiscountVO groupBuyDiscount) {
@@ -28,7 +32,7 @@ public abstract class AbstractDiscountCalculateService implements IDiscountCalcu
 
     private boolean filterTagId(String userId, String tagId) {
         // TODO 人群标签过滤
-        return true;
+        return tagRepository.queryCrowdTagsDetail(userId, tagId);
     }
 
     protected abstract BigDecimal doCalculate(BigDecimal originalPrice, GroupBuyDiscountVO groupBuyDiscount);

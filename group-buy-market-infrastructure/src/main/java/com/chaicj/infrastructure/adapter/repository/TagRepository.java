@@ -64,4 +64,16 @@ public class TagRepository implements ITagRepository {
         crowdTags.setStatistics(size);
         crowdTagsDao.updateCrowdTagsStatistics(crowdTags);
     }
+
+    @Override
+    public boolean queryCrowdTagsDetail(String userId, String tagId) {
+        RBitSet bitSet = redisService.getBitSet(tagId);
+        boolean flag = bitSet.get(redisService.getIndexFromUserId(userId));
+        if (flag) return flag;
+        CrowdTagsDetail crowdTagsDetailReq = new CrowdTagsDetail();
+        crowdTagsDetailReq.setTagId(tagId);
+        crowdTagsDetailReq.setUserId(userId);
+        CrowdTagsDetail crowdTagsDetail = crowdTagsDetailDao.queryCrowdTagsDetail(crowdTagsDetailReq);
+        return crowdTagsDetail != null;
+    }
 }
