@@ -1,6 +1,7 @@
 package com.chaicj.infrastructure.adapter.repository;
 
 import com.chaicj.domain.activity.adapter.repository.IActivityRepository;
+import com.chaicj.domain.activity.model.valobj.DiscountTypeEnum;
 import com.chaicj.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
 import com.chaicj.domain.activity.model.valobj.SkuVO;
@@ -45,7 +46,7 @@ public class ActivityRepository implements IActivityRepository {
         GroupBuyDiscountVO groupBuyDiscountVO = GroupBuyDiscountVO.builder()
                 .discountName(discount.getDiscountName())
                 .discountDesc(discount.getDiscountDesc())
-                .discountType(discount.getDiscountType())
+                .discountType(DiscountTypeEnum.get(discount.getDiscountType()))
                 .marketPlan(discount.getMarketPlan())
                 .marketExpr(discount.getMarketExpr())
                 .tagId(discount.getTagId())

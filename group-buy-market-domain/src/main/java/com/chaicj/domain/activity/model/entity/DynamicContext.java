@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,4 +18,7 @@ public class DynamicContext {
     private SkuVO skuVO;
 
     private GroupBuyActivityDiscountVO groupBuyActivityDiscountVO;
+
+    // 折扣价格
+    private BigDecimal deductionPrice;
 }

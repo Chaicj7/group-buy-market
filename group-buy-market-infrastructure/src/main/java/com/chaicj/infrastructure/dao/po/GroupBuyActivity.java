@@ -66,7 +66,7 @@ public class GroupBuyActivity {
     /**
      * 拼团时长（分钟）
      */
-    private int validTime;
+    private Integer validTime;
 
     /**
      * 活动状态（0创建、1生效、2过期、3废弃）
