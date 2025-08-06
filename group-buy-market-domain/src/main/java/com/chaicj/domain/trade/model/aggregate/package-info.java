@@ -1,0 +1,1 @@
+package com.chaicj.domain.trade.model.aggregate;
