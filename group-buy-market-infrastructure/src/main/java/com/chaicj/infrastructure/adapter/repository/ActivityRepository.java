@@ -10,6 +10,7 @@ import com.chaicj.infrastructure.dao.po.GroupBuyActivity;
 import com.chaicj.infrastructure.dao.po.GroupBuyDiscount;
 import com.chaicj.infrastructure.dao.po.SCSkuActivity;
 import com.chaicj.infrastructure.dao.po.Sku;
+import com.chaicj.infrastructure.dcc.DCCService;
 import com.chaicj.infrastructure.redis.IRedisService;
 import org.redisson.api.RBitSet;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,8 @@ public class ActivityRepository implements IActivityRepository {
     private ScSkuActivityDao scSkuActivityDao;
     @Resource
     private IRedisService redisService;
+    @Resource
+    private DCCService dccService;
 
     @Override
     public SkuVO querySkuByGoodsId(String goodsId) {
@@ -96,5 +99,15 @@ public class ActivityRepository implements IActivityRepository {
         if (!bitSet.isExists()) return true;
         // 判断用户是否存在人群中
         return bitSet.get(redisService.getIndexFromUserId(userId));
+    }
+
+    @Override
+    public boolean downgradeSwitch() {
+        return dccService.isDowngradeSwitch();
+    }
+
+    @Override
+    public boolean cutRange(String userId) {
+        return dccService.isCutRange(userId);
     }
 }
