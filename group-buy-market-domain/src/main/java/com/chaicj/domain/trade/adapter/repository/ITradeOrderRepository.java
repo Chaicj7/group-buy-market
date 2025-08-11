@@ -2,9 +2,14 @@ package com.chaicj.domain.trade.adapter.repository;
 
 import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
 import com.chaicj.domain.trade.model.aggregate.GroupBuyOrderAggregate;
+import com.chaicj.domain.trade.model.aggregate.GroupBuyTeamSettlementAggregate;
 import com.chaicj.domain.trade.model.entity.GroupBuyActivityEntity;
+import com.chaicj.domain.trade.model.entity.GroupBuyTeamEntity;
 import com.chaicj.domain.trade.model.entity.MarketPayOrderEntity;
+import com.chaicj.domain.trade.model.entity.NotifyTaskEntity;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
+
+import java.util.List;
 
 public interface ITradeOrderRepository {
 
@@ -23,4 +28,12 @@ public interface ITradeOrderRepository {
     GroupBuyActivityEntity queryGroupBuyActivityEntityByActivityId(Long activityId);
 
     Integer queryOrderCountByActivityId(Long activityId, String userId);
+
+    GroupBuyTeamEntity queryGroupBuyTeamByTeamId(String teamId);
+
+    void settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate);
+
+    List<NotifyTaskEntity> queryGroupBuySuccessNotifyList();
+
+    void updateNotifyTaskStatus(Long id);
 }

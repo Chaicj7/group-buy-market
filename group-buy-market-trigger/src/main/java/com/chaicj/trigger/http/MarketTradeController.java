@@ -8,14 +8,13 @@ import com.chaicj.api.response.Response;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
-import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
 import com.chaicj.domain.activity.service.IIndexGroupBuyMarketService;
 import com.chaicj.domain.trade.model.entity.MarketPayOrderEntity;
 import com.chaicj.domain.trade.model.entity.PayActivityEntity;
 import com.chaicj.domain.trade.model.entity.PayDiscountEntity;
 import com.chaicj.domain.trade.model.entity.UserEntity;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
-import com.chaicj.domain.trade.service.ITradeOrderService;
+import com.chaicj.domain.trade.service.ITradeLockOrderService;
 import com.chaicj.types.enums.ResponseCode;
 import com.chaicj.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class MarketTradeController implements IMarketTradeService {
     @Resource
     private IIndexGroupBuyMarketService indexGroupBuyMarketService;
     @Resource
-    private ITradeOrderService tradeOrderService;
+    private ITradeLockOrderService tradeOrderService;
 
     @PostMapping("/lockMarketPayOrder")
     @Override

@@ -1,4 +1,4 @@
-package com.chaicj.domain.trade.service.filter;
+package com.chaicj.domain.trade.service.lock.filter;
 
 import com.chaicj.domain.trade.adapter.repository.ITradeOrderRepository;
 import com.chaicj.domain.trade.model.entity.GroupBuyActivityEntity;

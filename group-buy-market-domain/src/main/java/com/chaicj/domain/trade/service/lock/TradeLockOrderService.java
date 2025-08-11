@@ -1,10 +1,10 @@
-package com.chaicj.domain.trade.service;
+package com.chaicj.domain.trade.service.lock;
 
-import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
 import com.chaicj.domain.trade.adapter.repository.ITradeOrderRepository;
 import com.chaicj.domain.trade.model.aggregate.GroupBuyOrderAggregate;
 import com.chaicj.domain.trade.model.entity.*;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
+import com.chaicj.domain.trade.service.ITradeLockOrderService;
 import com.chaicj.types.design.framework.link.model2.chain.BusinessLinkedList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Service
-public class TradeOrderService implements ITradeOrderService {
+public class TradeLockOrderService implements ITradeLockOrderService {
 
     @Resource
     private ITradeOrderRepository tradeOrderRepository;
