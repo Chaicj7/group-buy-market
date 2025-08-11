@@ -1,7 +1,7 @@
 package com.chaicj.domain.activity.service.trial.node;
 
 import com.alibaba.fastjson.JSON;
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class RootNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, DynamicContext, TrialBalanceEntity> {
+public class RootNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> {
 
     @Autowired
     private SwitchRoot switchRoot;
 
     @Override
-    protected TrialBalanceEntity doApply(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    protected TrialBalanceEntity doApply(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         log.info("拼图商品查询试算服务-RootNode userId:{} requestParameter:{}", requestParameter.getUserId(), JSON.toJSONString(requestParameter));
         // 参数判断
         if (StringUtils.isBlank(requestParameter.getUserId()) || StringUtils.isBlank(requestParameter.getGoodsId())
@@ -32,7 +32,7 @@ public class RootNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
     }
 
     @Override
-    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         return switchRoot;
     }
 }

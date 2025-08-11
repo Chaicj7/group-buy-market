@@ -1,6 +1,6 @@
 package com.chaicj.domain.activity.service.trial.factory;
 
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.service.trial.node.RootNode;
@@ -16,7 +16,7 @@ public class DefaultActivityStrategyFactory {
         this.rootNode = rootNode;
     }
 
-    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> strategyHandler() {
+    public StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> strategyHandler() {
         return rootNode;
     }
 

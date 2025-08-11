@@ -17,6 +17,7 @@ import com.chaicj.domain.trade.model.entity.UserEntity;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
 import com.chaicj.domain.trade.service.ITradeOrderService;
 import com.chaicj.types.enums.ResponseCode;
+import com.chaicj.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -87,9 +88,17 @@ public class MarketTradeController implements IMarketTradeService {
                     .channel(channel)
                     .source(source)
                     .build());
+            // 人群限定
+            if (!trialBalanceEntity.getIsVisible() || !trialBalanceEntity.getIsEnable()) {
+                return Response.<LockMarketPayOrderResponseDTO>builder()
+                        .code(ResponseCode.E0007.getCode())
+                        .info(ResponseCode.E0007.getInfo())
+                        .build();
+            }
+
             GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = trialBalanceEntity.getGroupBuyActivityDiscountVO();
 
-            // 锁单
+            // 营销优惠锁单
             marketPayOrderEntity = tradeOrderService.lockMarketPayOrder(
                     UserEntity.builder()
                             .userId(userId)
@@ -109,6 +118,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .goodsName(trialBalanceEntity.getGoodsName())
                             .originalPrice(trialBalanceEntity.getOriginalPrice())
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
+                            .payPrice(trialBalanceEntity.getOriginalPrice())
                             .outTradeNo(outTradeNo)
                             .build());
             log.info("交易锁单记录(新):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));
@@ -120,6 +130,12 @@ public class MarketTradeController implements IMarketTradeService {
                             .deductionPrice(marketPayOrderEntity.getDeductionPrice())
                             .tradeOrderStatus(marketPayOrderEntity.getTradeOrderStatus().getCode())
                             .build())
+                    .build();
+        } catch (AppException e) {
+            log.error("营销交易锁单业务异常:{} LockMarketPayOrderRequestDTO:{}", requestDTO.getUserId(), JSON.toJSONString(requestDTO), e);
+            return Response.<LockMarketPayOrderResponseDTO>builder()
+                    .code(e.getCode())
+                    .info(e.getInfo())
                     .build();
         } catch (Exception e) {
             log.error("营销交易锁单服务失败:{} LockMarketPayOrderRequestDTO:{}", requestDTO.getUserId(), JSON.toJSONString(requestDTO), e);

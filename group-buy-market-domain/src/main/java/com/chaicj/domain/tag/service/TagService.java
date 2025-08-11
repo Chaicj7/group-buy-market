@@ -24,7 +24,7 @@ public class TagService implements ITagService {
         // 2. 采集用户数据 - 这部分需要采集用户的消费类数据，后续有用户发起拼单后再处理。
 
         // 3. 数据写入记录
-        List<String> userIds = Arrays.asList("chaicj");
+        List<String> userIds = Arrays.asList("chaicj", "zhangsan", "lisi", "wangwu");
         for (String userId : userIds) {
             tagRepository.addCrowdTagsUserId(tagId, userId);
         }

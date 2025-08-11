@@ -1,6 +1,6 @@
 package com.chaicj.domain.activity.service.trial.node;
 
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
@@ -14,13 +14,13 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Service
-public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, DynamicContext, TrialBalanceEntity> {
+public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> {
 
     @Resource
     private EndNode endNode;
 
     @Override
-    protected TrialBalanceEntity doApply(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    protected TrialBalanceEntity doApply(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         // 获取拼团活动配置
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
         String tagId = groupBuyActivityDiscountVO.getTagId();
@@ -42,7 +42,7 @@ public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, 
     }
 
     @Override
-    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         return endNode;
     }
 }

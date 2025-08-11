@@ -1,6 +1,6 @@
 package com.chaicj.domain.activity.service;
 
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
@@ -18,9 +18,9 @@ public class IndexGroupBuyMarketServiceImpl implements  IIndexGroupBuyMarketServ
     @Override
     public TrialBalanceEntity indexMarketTrial(MarketProductEntity marketProductEntity) throws Exception {
 
-        StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> strategyHandler = defaultActivityStrategyFactory.strategyHandler();
+        StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> strategyHandler = defaultActivityStrategyFactory.strategyHandler();
 
-        TrialBalanceEntity trialBalanceEntity = strategyHandler.apply(marketProductEntity, new DynamicContext());
+        TrialBalanceEntity trialBalanceEntity = strategyHandler.apply(marketProductEntity, new MarketDynamicContext());
 
         return trialBalanceEntity;
     }

@@ -1,7 +1,7 @@
 package com.chaicj.domain.activity.service.trial.node;
 
 import com.alibaba.fastjson.JSON;
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, DynamicContext, TrialBalanceEntity> {
+public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> {
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
@@ -38,7 +38,7 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
     private Map<String, IDiscountCalculateService> discountCalculateServiceMap;
 
     @Override
-    protected void multiThread(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    protected void multiThread(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         QueryGroupBuyActivityDiscountVOThreadTask queryGroupBuyActivityDiscountVOThreadTask = new QueryGroupBuyActivityDiscountVOThreadTask(requestParameter.getSource(), requestParameter.getChannel(), requestParameter.getGoodsId(), activityRepository);
         FutureTask<GroupBuyActivityDiscountVO> groupBuyActivityVOFutureTask = new FutureTask<>(queryGroupBuyActivityDiscountVOThreadTask);
         threadPoolExecutor.execute(groupBuyActivityVOFutureTask);
@@ -53,7 +53,7 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
     }
 
     @Override
-    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         log.info("拼团商品查询试算服务-MarketNode userId:{} requestParameter:{}", requestParameter.getUserId(), JSON.toJSONString(requestParameter));
         // 拼图试算优惠
         if (dynamicContext.getGroupBuyActivityDiscountVO() == null || dynamicContext.getSkuVO() == null) {
@@ -70,14 +70,15 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
         }
         // 折扣价格
         BigDecimal calculate = discountCalculateService.calculate(requestParameter.getUserId(), skuVO.getOriginalPrice(), groupBuyDiscount);
-        dynamicContext.setDeductionPrice(calculate);
+        dynamicContext.setDeductionPrice(skuVO.getOriginalPrice().subtract(calculate));
+        dynamicContext.setPayPrice(calculate);
         return routor(requestParameter, dynamicContext);
     }
 
     @Override
-    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         // 不存在配置的拼团活动，走异常节点
-        if (dynamicContext.getDeductionPrice() == null || dynamicContext.getGroupBuyActivityDiscountVO() == null || dynamicContext.getSkuVO() == null) {
+        if (dynamicContext.getPayPrice() == null || dynamicContext.getGroupBuyActivityDiscountVO() == null || dynamicContext.getSkuVO() == null) {
             return errorNode;
         }
         return tagNode;

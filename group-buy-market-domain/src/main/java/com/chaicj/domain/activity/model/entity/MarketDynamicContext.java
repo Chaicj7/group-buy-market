@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DynamicContext {
+public class MarketDynamicContext {
 
     private SkuVO skuVO;
 
@@ -21,6 +21,9 @@ public class DynamicContext {
 
     // 折扣价格
     private BigDecimal deductionPrice;
+
+    // 实际支付价格
+    private BigDecimal payPrice;
 
     // 活动可见性限制
     private boolean visible;

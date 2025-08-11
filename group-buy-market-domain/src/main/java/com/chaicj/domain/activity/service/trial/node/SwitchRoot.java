@@ -1,7 +1,7 @@
 package com.chaicj.domain.activity.service.trial.node;
 
 import com.alibaba.fastjson.JSON;
-import com.chaicj.domain.activity.model.entity.DynamicContext;
+import com.chaicj.domain.activity.model.entity.MarketDynamicContext;
 import com.chaicj.domain.activity.model.entity.MarketProductEntity;
 import com.chaicj.domain.activity.model.entity.TrialBalanceEntity;
 import com.chaicj.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
@@ -15,13 +15,13 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Service
-public class SwitchRoot extends AbstractGroupBuyMarketSupport<MarketProductEntity, DynamicContext, TrialBalanceEntity> {
+public class SwitchRoot extends AbstractGroupBuyMarketSupport<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> {
 
     @Resource
     private MarketNode marketNode;
 
     @Override
-    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         log.info("拼团商品查询试算服务-SwitchNode userId:{} requestParameter:{}", requestParameter.getUserId(), JSON.toJSONString(requestParameter));
         // 根据用户ID切量
         String userId = requestParameter.getUserId();
@@ -41,7 +41,7 @@ public class SwitchRoot extends AbstractGroupBuyMarketSupport<MarketProductEntit
     }
 
     @Override
-    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DynamicContext dynamicContext) throws Exception {
+    public StrategyHandler<MarketProductEntity, MarketDynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, MarketDynamicContext dynamicContext) throws Exception {
         return marketNode;
     }
 }

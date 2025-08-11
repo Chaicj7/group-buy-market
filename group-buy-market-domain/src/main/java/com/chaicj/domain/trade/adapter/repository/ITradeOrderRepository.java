@@ -2,6 +2,7 @@ package com.chaicj.domain.trade.adapter.repository;
 
 import com.chaicj.domain.activity.model.valobj.GroupBuyDiscountVO;
 import com.chaicj.domain.trade.model.aggregate.GroupBuyOrderAggregate;
+import com.chaicj.domain.trade.model.entity.GroupBuyActivityEntity;
 import com.chaicj.domain.trade.model.entity.MarketPayOrderEntity;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
 
@@ -18,4 +19,8 @@ public interface ITradeOrderRepository {
     GroupBuyProgressVO queryGroupBuyProgress(String teamId);
 
     MarketPayOrderEntity lockMarketPayOrder(GroupBuyOrderAggregate groupBuyOrderAggregate);
+
+    GroupBuyActivityEntity queryGroupBuyActivityEntityByActivityId(Long activityId);
+
+    Integer queryOrderCountByActivityId(Long activityId, String userId);
 }

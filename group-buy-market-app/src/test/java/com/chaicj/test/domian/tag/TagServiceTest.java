@@ -33,6 +33,9 @@ public class TagServiceTest {
         // 是否存在
         log.info("chaicj 存在，预期结果为 true，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("chaicj")));
         log.info("zhangsan 不存在，预期结果为 false，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("zhangsan")));
+        log.info("zhangsan 不存在，预期结果为 false，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("lisi")));
+        log.info("zhangsan 不存在，预期结果为 false，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("wangwu")));
+        log.info("zhangsan 不存在，预期结果为 false，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("zhaoliu")));
     }
 
 }
