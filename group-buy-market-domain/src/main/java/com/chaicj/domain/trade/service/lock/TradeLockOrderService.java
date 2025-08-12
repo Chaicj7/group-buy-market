@@ -18,7 +18,7 @@ public class TradeLockOrderService implements ITradeLockOrderService {
     @Resource
     private ITradeOrderRepository tradeOrderRepository;
     @Resource
-    private BusinessLinkedList<TradeRuleCommandEntity, TradeRuleDynamicContext, TradeRuleFilterBackEntity> tradeRuleFilter;
+    private BusinessLinkedList<TradeLockRuleCommandEntity, TradeLockRuleDynamicContext, TradeLockRuleFilterBackEntity> tradeRuleFilter;
 
 
     @Override
@@ -35,11 +35,11 @@ public class TradeLockOrderService implements ITradeLockOrderService {
     public MarketPayOrderEntity lockMarketPayOrder(UserEntity userEntity, PayActivityEntity activityEntity, PayDiscountEntity discountEntity) throws Exception {
         log.info("拼团交易-锁定营销优惠支付订单:{} activityId:{} goodsId:{}", userEntity.getUserId(), activityEntity.getActivityId(), discountEntity.getGoodsId());
         // 交易规则过滤
-        TradeRuleFilterBackEntity tradeRuleFilterBack = tradeRuleFilter.apply(TradeRuleCommandEntity.builder()
+        TradeLockRuleFilterBackEntity tradeRuleFilterBack = tradeRuleFilter.apply(TradeLockRuleCommandEntity.builder()
                         .activityId(activityEntity.getActivityId())
                         .userId(userEntity.getUserId())
                         .build(),
-                TradeRuleDynamicContext.builder().build());
+                TradeLockRuleDynamicContext.builder().build());
         // 已参与拼团量 - 用于构建数据库唯一索引使用，确保用户只能在一个活动上参与固定的次数
         Integer userTakeOrderCount = tradeRuleFilterBack.getUserTakeOrderCount();
 

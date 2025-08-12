@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TradeRuleFilterBackEntity {
+public class TradeLockRuleFilterBackEntity {
 
     // 用户参与活动的订单量
     private Integer userTakeOrderCount;

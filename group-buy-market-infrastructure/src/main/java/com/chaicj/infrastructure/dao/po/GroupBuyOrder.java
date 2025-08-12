@@ -38,6 +38,10 @@ public class GroupBuyOrder {
     private Integer lockCount;
     /** 状态（0-拼单中、1-完成、2-失败） */
     private Integer status;
+    /** 有效开始时间 */
+    private Date validStartTime;
+    /** 有效结束时间 */
+    private Date validEndTime;
     /** 创建时间 */
     private Date createTime;
     /** 更新时间 */

@@ -7,11 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
+/**
+ * 拼团交易结算规则命令
+ */
+
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class TradePaySuccessEntity {
+@AllArgsConstructor
+public class TradeSettlementRuleCommandEntity {
 
     /** 渠道 */
     private String source;
@@ -21,6 +26,7 @@ public class TradePaySuccessEntity {
     private String userId;
     /** 外部交易单号 */
     private String outTradeNo;
+    /** 外部交易时间 */
     private Date outTradeTime;
 
 }

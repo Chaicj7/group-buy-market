@@ -26,7 +26,7 @@ public class MarketTradeControllerTest {
     public void testLockMarketPayOrder() throws Exception {
         LockMarketPayOrderRequestDTO requestDTO = new LockMarketPayOrderRequestDTO();
         requestDTO.setUserId("wangwu");
-        requestDTO.setTeamId("05494091");
+        requestDTO.setTeamId("46425973");
         requestDTO.setActivityId(100123L);
         requestDTO.setGoodsId("9890001");
         requestDTO.setSource("s01");

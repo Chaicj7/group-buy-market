@@ -2,9 +2,9 @@ package com.chaicj.domain.trade.service.lock.filter;
 
 import com.chaicj.domain.trade.adapter.repository.ITradeOrderRepository;
 import com.chaicj.domain.trade.model.entity.GroupBuyActivityEntity;
-import com.chaicj.domain.trade.model.entity.TradeRuleCommandEntity;
-import com.chaicj.domain.trade.model.entity.TradeRuleDynamicContext;
-import com.chaicj.domain.trade.model.entity.TradeRuleFilterBackEntity;
+import com.chaicj.domain.trade.model.entity.TradeLockRuleCommandEntity;
+import com.chaicj.domain.trade.model.entity.TradeLockRuleDynamicContext;
+import com.chaicj.domain.trade.model.entity.TradeLockRuleFilterBackEntity;
 import com.chaicj.types.design.framework.link.model2.handler.ILogicHandler;
 import com.chaicj.types.enums.ActivityStatusEnumVO;
 import com.chaicj.types.enums.ResponseCode;
@@ -21,14 +21,14 @@ import java.util.Date;
 
 @Slf4j
 @Component
-public class ActivityUsabilityRuleFilter implements ILogicHandler<TradeRuleCommandEntity, TradeRuleDynamicContext, TradeRuleFilterBackEntity> {
+public class ActivityUsabilityRuleFilter implements ILogicHandler<TradeLockRuleCommandEntity, TradeLockRuleDynamicContext, TradeLockRuleFilterBackEntity> {
 
     @Resource
     private ITradeOrderRepository repository;
 
 
     @Override
-    public TradeRuleFilterBackEntity apply(TradeRuleCommandEntity requestParameter, TradeRuleDynamicContext dynamicContext) throws Exception {
+    public TradeLockRuleFilterBackEntity apply(TradeLockRuleCommandEntity requestParameter, TradeLockRuleDynamicContext dynamicContext) throws Exception {
         log.info("交易规则过滤-活动的可用性校验{} activityId:{}", requestParameter.getUserId(), requestParameter.getActivityId());
         // 查询拼团活动
         GroupBuyActivityEntity groupBuyActivityEntity = repository.queryGroupBuyActivityEntityByActivityId(requestParameter.getActivityId());

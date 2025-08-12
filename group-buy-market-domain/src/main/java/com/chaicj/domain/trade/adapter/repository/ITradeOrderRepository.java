@@ -36,4 +36,6 @@ public interface ITradeOrderRepository {
     List<NotifyTaskEntity> queryGroupBuySuccessNotifyList();
 
     void updateNotifyTaskStatus(Long id);
+
+    Boolean isSCBlackIntercept(String source, String channel);
 }

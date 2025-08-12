@@ -23,6 +23,8 @@ public class PayActivityEntity {
     private Date startTime;
     /** 拼团结束时间 */
     private Date endTime;
+    /** 拼团有效时间 */
+    private Integer validTime;
     /** 目标数量 */
     private Integer targetCount;
 }

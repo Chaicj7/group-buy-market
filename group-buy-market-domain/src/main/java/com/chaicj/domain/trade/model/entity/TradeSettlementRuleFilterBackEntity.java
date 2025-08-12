@@ -8,11 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * 拼团交易结算规则反馈
+ */
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupBuyTeamEntity {
+public class TradeSettlementRuleFilterBackEntity {
 
     /** 拼单组队ID */
     private String teamId;
@@ -26,9 +30,9 @@ public class GroupBuyTeamEntity {
     private Integer lockCount;
     /** 状态（0-拼单中、1-完成、2-失败） */
     private GroupBuyOrderEnumVO status;
-    /** 有效开始时间 */
+    /** 拼团开始时间 - 参与拼团时间 */
     private Date validStartTime;
-    /** 有效结束时间 */
+    /** 拼团结束时间 - 拼团有效时长 */
     private Date validEndTime;
 
 }
