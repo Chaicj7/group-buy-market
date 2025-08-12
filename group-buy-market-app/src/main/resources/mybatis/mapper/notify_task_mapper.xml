@@ -23,12 +23,28 @@
     <select id="queryGroupBuySuccessNotifyList" resultMap="resultMap">
         select id, activity_id, team_id, notify_url, notify_count, notify_status, parameter_json, create_time, update_time
         from notify_task
-        where notify_status = 0
+        where notify_status in (0, 2)
     </select>
 
-    <update id="updateNotifyTaskStatus" parameterType="java.lang.Long">
-        update notify_task set notify_status = 1
-        where id = #{id}
+    <update id="updateNotifyTaskStatusSuccess" parameterType="java.lang.String">
+        update notify_task set notify_status = 1, notify_count = notify_count + 1, update_time = now()
+        where team_id = #{teamId}
     </update>
 
+    <update id="updateNotifyTaskStatusRetry" parameterType="java.lang.String">
+        update notify_task
+        set notify_count = notify_count + 1, notify_status = 2, update_time = now()
+        where team_id = #{teamId}
+    </update>
+    <update id="updateNotifyTaskStatusError" parameterType="java.lang.String">
+        update notify_task
+        set notify_count = notify_count + 1, notify_status = 3, update_time = now()
+        where team_id = #{teamId}
+    </update>
+
+    <select id="queryUnExecutedNotifyTaskList" parameterType="com.chaicj.infrastructure.dao.po.NotifyTask" resultMap="resultMap">
+        select activity_id, team_id, notify_url, notify_count, notify_status, parameter_json, create_time, update_time
+        from notify_task
+        where team_id = #{teamId} and notify_status in (0, 2)
+    </select>
 </mapper>

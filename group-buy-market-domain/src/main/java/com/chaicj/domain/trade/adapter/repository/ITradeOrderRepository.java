@@ -31,11 +31,17 @@ public interface ITradeOrderRepository {
 
     GroupBuyTeamEntity queryGroupBuyTeamByTeamId(String teamId);
 
-    void settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate);
+    boolean settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate);
 
     List<NotifyTaskEntity> queryGroupBuySuccessNotifyList();
 
-    void updateNotifyTaskStatus(Long id);
-
     Boolean isSCBlackIntercept(String source, String channel);
+
+    int updateNotifyTaskStatusSuccess(String teamId);
+
+    int updateNotifyTaskStatusRetry(String teamId);
+
+    int updateNotifyTaskStatusError(String teamId);
+
+    List<NotifyTaskEntity> queryUnExecutedNotifyTaskList(String teamId);
 }

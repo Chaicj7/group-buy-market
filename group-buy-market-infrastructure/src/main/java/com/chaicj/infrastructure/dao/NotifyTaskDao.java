@@ -12,5 +12,11 @@ public interface NotifyTaskDao {
 
     List<NotifyTask> queryGroupBuySuccessNotifyList();
 
-    void updateNotifyTaskStatus(Long id);
+    int updateNotifyTaskStatusSuccess(String teamId);
+
+    int updateNotifyTaskStatusRetry(String teamId);
+
+    int updateNotifyTaskStatusError(String teamId);
+
+    List<NotifyTask> queryUnExecutedNotifyTaskList(String teamId);
 }

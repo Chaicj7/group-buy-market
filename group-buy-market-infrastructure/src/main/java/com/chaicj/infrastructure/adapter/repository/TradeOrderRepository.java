@@ -31,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -109,6 +106,7 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                     .status(TradeOrderStatusEnumVO.CREATE.getCode())
                     .validStartTime(currentDate)
                     .validEndTime(calendar.getTime())
+                    .notifyUrl(discountEntity.getNotifyUrl())
                     .build();
             groupBuyOrderDao.insert(groupBuyOrder);
         } else {
@@ -190,12 +188,13 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                 .status(GroupBuyOrderEnumVO.valueOf(groupBuyOrder.getStatus()))
                 .validStartTime(groupBuyOrder.getValidStartTime())
                 .validEndTime(groupBuyOrder.getValidEndTime())
+                .notifyUrl(groupBuyOrder.getNotifyUrl())
                 .build();
     }
 
 //    @Transactional(timeout = 500)
     @Override
-    public void settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate) {
+    public boolean settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate) {
         UserEntity userEntity = settlementAggregate.getUserEntity();
         GroupBuyTeamEntity groupBuyTeamEntity = settlementAggregate.getGroupBuyTeamEntity();
         TradePaySuccessEntity tradePaySuccessEntity = settlementAggregate.getTradePaySuccessEntity();
@@ -230,7 +229,7 @@ public class TradeOrderRepository implements ITradeOrderRepository {
             NotifyTask notifyTask = NotifyTask.builder()
                     .activityId(groupBuyTeamEntity.getActivityId())
                     .teamId(groupBuyTeamEntity.getTeamId())
-                    .notifyUrl("无")
+                    .notifyUrl(groupBuyTeamEntity.getNotifyUrl())
                     .notifyCount(0)
                     .notifyStatus(0)
                     .parameterJson(JSON.toJSONString(new HashMap<String, Object>() {{
@@ -239,13 +238,15 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                     }}))
                     .build();
             notifyTaskDao.insert(notifyTask);
+            return true;
         }
+        return false;
     }
 
     @Override
     public List<NotifyTaskEntity> queryGroupBuySuccessNotifyList() {
         List<NotifyTask> notifyTaskList = notifyTaskDao.queryGroupBuySuccessNotifyList();
-        if (CollectionUtils.isEmpty(notifyTaskList)) return null;
+        if (CollectionUtils.isEmpty(notifyTaskList)) return new ArrayList<>();
         return notifyTaskList.stream().map(notifyTask -> NotifyTaskEntity.builder()
                 .id(notifyTask.getId())
                 .teamId(notifyTask.getTeamId())
@@ -258,12 +259,37 @@ public class TradeOrderRepository implements ITradeOrderRepository {
     }
 
     @Override
-    public void updateNotifyTaskStatus(Long id) {
-        notifyTaskDao.updateNotifyTaskStatus(id);
+    public Boolean isSCBlackIntercept(String source, String channel) {
+        return dccService.isSCBlackIntercept(source, channel);
     }
 
     @Override
-    public Boolean isSCBlackIntercept(String source, String channel) {
-        return dccService.isSCBlackIntercept(source, channel);
+    public int updateNotifyTaskStatusSuccess(String teamId) {
+        return notifyTaskDao.updateNotifyTaskStatusSuccess(teamId);
+    }
+
+    @Override
+    public int updateNotifyTaskStatusRetry(String teamId) {
+        return notifyTaskDao.updateNotifyTaskStatusRetry(teamId);
+    }
+
+    @Override
+    public int updateNotifyTaskStatusError(String teamId) {
+        return notifyTaskDao.updateNotifyTaskStatusError(teamId);
+    }
+
+    @Override
+    public List<NotifyTaskEntity> queryUnExecutedNotifyTaskList(String teamId) {
+        List<NotifyTask> notifyTaskList = notifyTaskDao.queryUnExecutedNotifyTaskList(teamId);
+        if (CollectionUtils.isEmpty(notifyTaskList)) return new ArrayList<>();
+        return notifyTaskList.stream().map(notifyTask -> NotifyTaskEntity.builder()
+                .id(notifyTask.getId())
+                .teamId(notifyTask.getTeamId())
+                .activityId(notifyTask.getActivityId())
+                .notifyUrl(notifyTask.getNotifyUrl())
+                .notifyCount(notifyTask.getNotifyCount())
+                .notifyStatus(notifyTask.getNotifyStatus())
+                .parameterJson(notifyTask.getParameterJson())
+                .build()).collect(Collectors.toList());
     }
 }

@@ -25,13 +25,14 @@ public class MarketTradeControllerTest {
     @Test
     public void testLockMarketPayOrder() throws Exception {
         LockMarketPayOrderRequestDTO requestDTO = new LockMarketPayOrderRequestDTO();
-        requestDTO.setUserId("wangwu");
-        requestDTO.setTeamId("46425973");
+        requestDTO.setUserId("lisi");
+        requestDTO.setTeamId("05476313");
         requestDTO.setActivityId(100123L);
         requestDTO.setGoodsId("9890001");
         requestDTO.setSource("s01");
         requestDTO.setChannel("c01");
         requestDTO.setOutTradeNo(RandomStringUtils.randomNumeric(12));
+        requestDTO.setNotifyUrl("http://127.0.0.1:8091/api/v1/test/group_buy_notify");
         Response<LockMarketPayOrderResponseDTO> response = marketTradeService.lockMarketPayOrder(requestDTO);
         log.info("request: {}", JSON.toJSONString(requestDTO));
         log.info("response: {}", JSON.toJSONString(response));

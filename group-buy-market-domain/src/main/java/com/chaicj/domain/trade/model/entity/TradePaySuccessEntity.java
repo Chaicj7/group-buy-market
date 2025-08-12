@@ -22,5 +22,6 @@ public class TradePaySuccessEntity {
     /** 外部交易单号 */
     private String outTradeNo;
     private Date outTradeTime;
+    private String notifyUrl;
 
 }
