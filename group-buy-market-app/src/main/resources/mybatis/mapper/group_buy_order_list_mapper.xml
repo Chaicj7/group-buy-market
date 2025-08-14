@@ -23,7 +23,8 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <select id="queryGroupBuyOrderRecordByOutTradeNo" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList" resultMap="resultMap">
+    <select id="queryGroupBuyOrderRecordByOutTradeNo" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList"
+            resultMap="resultMap">
         select user_id,
                team_id,
                order_id,
@@ -49,28 +50,69 @@
 
     <insert id="insert" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList">
         insert into group_buy_order_list (user_id, team_id, order_id, activity_id, start_time, end_time, goods_id,
-                                          source, channel, original_price, deduction_price, status, out_trade_no, biz_id,
+                                          source, channel, original_price, deduction_price, status, out_trade_no,
+                                          biz_id,
                                           create_time, update_time)
         values (#{userId}, #{teamId}, #{orderId}, #{activityId}, #{startTime}, #{endTime}, #{goodsId}, #{source},
                 #{channel}, #{originalPrice}, #{deductionPrice}, #{status}, #{outTradeNo}, #{bizId}, now(), now())
     </insert>
 
-    <select id="queryOrderCountByActivityId" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList" resultType="java.lang.Integer">
+    <select id="queryOrderCountByActivityId" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList"
+            resultType="java.lang.Integer">
         select count(*)
         from group_buy_order_list
-        where activity_id = #{activityId} and user_id = #{userId}
+        where activity_id = #{activityId}
+          and user_id = #{userId}
     </select>
 
     <update id="updateOrderStatus2COMPLETE" parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList">
         update group_buy_order_list
-        set status = 1, out_trade_time = #{outTradeTime}, update_time = now()
-        where out_trade_no = #{outTradeNo} and user_id = #{userId}
+        set status         = 1,
+            out_trade_time = #{outTradeTime},
+            update_time    = now()
+        where out_trade_no = #{outTradeNo}
+          and user_id = #{userId}
     </update>
 
-    <select id="queryGroupBuyCompleteOrderOutTradeNoListByTeamId" parameterType="java.lang.String" resultType="java.lang.String">
+    <select id="queryGroupBuyCompleteOrderOutTradeNoListByTeamId" parameterType="java.lang.String"
+            resultType="java.lang.String">
         select out_trade_no
         from group_buy_order_list
-        where team_id = #{teamId} and status = 1
+        where team_id = #{teamId}
+          and status = 1
+    </select>
+
+    <select id="queryInProgressUserGroupBuyOrderDetailListByActivityId" parameterType="java.lang.Long"
+            resultMap="resultMap">
+        select team_id
+        from group_buy_order_list
+        where activity_id = #{activityId}
+          and status in (0, 1)
+        group by team_id
+    </select>
+
+    <select id="queryInProgressUserGroupBuyOrderDetailListByUserId"
+            parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList" resultMap="resultMap">
+        select user_id, team_id, activity_id, out_trade_no
+        from group_buy_order_list
+        where activity_id = #{activityId}
+          and user_id = #{userId}
+          and status in (0, 1)
+          and end_time > now()
+        order by id desc
+            limit #{count}
+    </select>
+
+    <select id="queryInProgressUserGroupBuyOrderDetailListByRandom"
+            parameterType="com.chaicj.infrastructure.dao.po.GroupBuyOrderList" resultMap="resultMap">
+        select user_id, team_id, out_trade_no
+        from group_buy_order_list
+        where activity_id = #{activityId}
+          and user_id != #{userId}
+          and status in (0, 1)
+          and end_time > now()
+        order by id desc
+            limit #{count}
     </select>
 
 </mapper>

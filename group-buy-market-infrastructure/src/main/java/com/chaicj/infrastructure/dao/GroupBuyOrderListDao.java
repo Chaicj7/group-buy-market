@@ -17,4 +17,10 @@ public interface GroupBuyOrderListDao {
     int updateOrderStatus2COMPLETE(GroupBuyOrderList groupBuyOrderListReq);
 
     List<String> queryGroupBuyCompleteOrderOutTradeNoListByTeamId(String teamId);
+
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByActivityId(Long activityId);
+
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByUserId(GroupBuyOrderList groupBuyOrderListReq);
+
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByRandom(GroupBuyOrderList groupBuyOrderListReq);
 }

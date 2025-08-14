@@ -66,4 +66,41 @@
         where team_id = #{teamId} and status = 0
     </update>
 
+    <select id="queryAllTeamCount" parameterType="java.util.List" resultMap="resultMap">
+        select team_id,
+               target_count,
+               complete_count,
+               lock_count,
+               status
+        from group_buy_order
+        where team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
+    <select id="queryGroupBuyProgressByTeamIds" parameterType="java.util.Set" resultMap="resultMap">
+        select team_id,
+               activity_id,
+               source,
+               channel,
+               original_price,
+               deduction_price,
+               pay_price,
+               target_count,
+               complete_count,
+               lock_count,
+               status,
+               valid_start_time,
+               valid_end_time,
+               notify_url,
+               create_time,
+               update_time
+        from group_buy_order
+        where team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
 </mapper>
