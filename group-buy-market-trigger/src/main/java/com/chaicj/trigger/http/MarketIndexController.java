@@ -31,7 +31,7 @@ public class MarketIndexController implements IMarketIndexService {
     @Resource
     private IIndexGroupBuyMarketService indexGroupBuyMarketService;
 
-    @PostMapping("/query_goods_buy_market_config")
+    @PostMapping("/query_group_buy_market_config")
     @Override
     public Response<GoodsMarketResponseDTO> queryGoodsBuyMarketConfig(@RequestBody GoodsMarketRequestDTO requestDTO) {
         try {

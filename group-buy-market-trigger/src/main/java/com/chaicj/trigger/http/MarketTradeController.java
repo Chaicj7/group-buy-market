@@ -37,7 +37,7 @@ public class MarketTradeController implements IMarketTradeService {
     @Resource
     private ITradeSettlementOrderService tradeSettlementOrderService;
 
-    @PostMapping("/lockMarketPayOrder")
+    @PostMapping("/lock_market_pay_order")
     @Override
     public Response<LockMarketPayOrderResponseDTO> lockMarketPayOrder(@RequestBody LockMarketPayOrderRequestDTO requestDTO) throws Exception {
         try {
@@ -152,7 +152,7 @@ public class MarketTradeController implements IMarketTradeService {
 
     @PostMapping("/settlement_market_pay_order")
     @Override
-    public Response<SettlementMarketPayOrderResponseDTO> settlementMarketPayOrder(SettlementMarketPayOrderRequestDTO requestDTO) {
+    public Response<SettlementMarketPayOrderResponseDTO> settlementMarketPayOrder(@RequestBody SettlementMarketPayOrderRequestDTO requestDTO) {
         try {
             log.info("营销交易组队结算开始:{} outTradeNo:{}", requestDTO.getUserId(), requestDTO.getOutTradeNo());
             if (StringUtils.isBlank(requestDTO.getUserId()) || StringUtils.isBlank(requestDTO.getSource()) || StringUtils.isBlank(requestDTO.getChannel()) || StringUtils.isBlank(requestDTO.getOutTradeNo()) || null == requestDTO.getOutTradeTime()) {

@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/v1/index/")
+@RequestMapping("/api/v1/index1/")
 public class IndexGroupBuyMarketController {
 
     @Resource
