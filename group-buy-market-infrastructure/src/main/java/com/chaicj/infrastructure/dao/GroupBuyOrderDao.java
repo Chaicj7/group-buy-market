@@ -2,6 +2,7 @@ package com.chaicj.infrastructure.dao;
 
 import com.chaicj.infrastructure.dao.po.GroupBuyOrder;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ public interface GroupBuyOrderDao {
 
     int updateOrderStatus2COMPLETE(String teamId);
 
-    List<GroupBuyOrder> queryAllTeamCount(List<String> teamIds);
+    List<GroupBuyOrder> queryAllTeamCount(@Param("teamIds") List<String> teamIds);
 
-    List<GroupBuyOrder> queryGroupBuyProgressByTeamIds(Set<String> teamIds);
+    List<GroupBuyOrder> queryGroupBuyProgressByTeamIds(@Param("teamIds") Set<String> teamIds);
 }

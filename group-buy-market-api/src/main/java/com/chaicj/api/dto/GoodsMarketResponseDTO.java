@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 public class GoodsMarketResponseDTO {
 
+    private Long activityId;
+
     private Goods goods;
     private List<Team> teamList;
     private TeamStatistic teamStatistic;
