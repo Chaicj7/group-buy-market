@@ -33,12 +33,12 @@
 
     <update id="updateNotifyTaskStatusRetry" parameterType="java.lang.String">
         update notify_task
-        set notify_count = notify_count + 1, notify_status = 2, update_time = now()
+        set notify_count = notify_count + 1, notify_status = 3, update_time = now()
         where team_id = #{teamId}
     </update>
     <update id="updateNotifyTaskStatusError" parameterType="java.lang.String">
         update notify_task
-        set notify_count = notify_count + 1, notify_status = 3, update_time = now()
+        set notify_count = notify_count + 1, notify_status = 2, update_time = now()
         where team_id = #{teamId}
     </update>
 

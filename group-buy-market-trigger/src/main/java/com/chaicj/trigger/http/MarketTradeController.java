@@ -62,7 +62,9 @@ public class MarketTradeController implements IMarketTradeService {
             if (marketPayOrderEntity != null) {
                 LockMarketPayOrderResponseDTO lockMarketPayOrderResponseDTO = LockMarketPayOrderResponseDTO.builder()
                         .orderId(marketPayOrderEntity.getOrderId())
+                        .originalPrice(marketPayOrderEntity.getOriginalPrice())
                         .deductionPrice(marketPayOrderEntity.getDeductionPrice())
+                        .payPrice(marketPayOrderEntity.getPayPrice())
                         .tradeOrderStatus(marketPayOrderEntity.getTradeOrderStatus().getCode())
                         .build();
                 log.info("交易锁单记录(存在):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));
@@ -121,7 +123,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .goodsName(trialBalanceEntity.getGoodsName())
                             .originalPrice(trialBalanceEntity.getOriginalPrice())
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
-                            .payPrice(trialBalanceEntity.getOriginalPrice())
+                            .payPrice(trialBalanceEntity.getPayPrice())
                             .outTradeNo(outTradeNo)
                             .notifyUrl(notifyUrl)
                             .build());
@@ -131,7 +133,9 @@ public class MarketTradeController implements IMarketTradeService {
                     .info(ResponseCode.SUCCESS.getInfo())
                     .data(LockMarketPayOrderResponseDTO.builder()
                             .orderId(marketPayOrderEntity.getOrderId())
+                            .originalPrice(marketPayOrderEntity.getOriginalPrice())
                             .deductionPrice(marketPayOrderEntity.getDeductionPrice())
+                            .payPrice(marketPayOrderEntity.getPayPrice())
                             .tradeOrderStatus(marketPayOrderEntity.getTradeOrderStatus().getCode())
                             .build())
                     .build();
