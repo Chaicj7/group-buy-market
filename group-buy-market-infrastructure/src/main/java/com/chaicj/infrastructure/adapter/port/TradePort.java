@@ -2,6 +2,8 @@ package com.chaicj.infrastructure.adapter.port;
 
 import com.chaicj.domain.trade.adapter.port.ITradePort;
 import com.chaicj.domain.trade.model.entity.NotifyTaskEntity;
+import com.chaicj.domain.trade.model.valobj.NotifyTypeEnumVO;
+import com.chaicj.infrastructure.event.EventPublisher;
 import com.chaicj.infrastructure.gateway.GroupBuyNotifyService;
 import com.chaicj.infrastructure.redis.IRedisService;
 import com.chaicj.types.enums.NotifyTaskHTTPEnumVO;
@@ -21,6 +23,8 @@ public class TradePort implements ITradePort {
     private IRedisService redisService;
     @Resource
     private GroupBuyNotifyService groupBuyNotifyService;
+    @Resource
+    private EventPublisher publisher;
 
     @Override
     public String GroupBuyNotify(NotifyTaskEntity notifyTaskEntity) throws Exception {
@@ -29,11 +33,16 @@ public class TradePort implements ITradePort {
             // group-buy-market 拼团服务端会被部署到多台应用服务器上，那么就会有很多任务一起执行。这个时候要进行抢占，避免被多次执行
             if (lock.tryLock(3, 0 , TimeUnit.SECONDS)) {
                 try {
-                    // 无效的 notifyUrl 则直接返回成功
-                    if (StringUtils.isEmpty(notifyTaskEntity.getNotifyUrl())) {
+                    if (NotifyTypeEnumVO.HTTP.getCode().equals(notifyTaskEntity.getNotifyType())) {
+                        // 无效的 notifyUrl 则直接返回成功
+                        if (StringUtils.isEmpty(notifyTaskEntity.getNotifyUrl())) {
+                            return NotifyTaskHTTPEnumVO.SUCCESS.getCode();
+                        }
+                        return groupBuyNotifyService.groupBuyNotify(notifyTaskEntity.getNotifyUrl(), notifyTaskEntity.getParameterJson());
+                    } else if (NotifyTypeEnumVO.MQ.getCode().equals(notifyTaskEntity.getNotifyType())) {
+                        publisher.publish(notifyTaskEntity.getNotifyMQ(), notifyTaskEntity.getParameterJson());
                         return NotifyTaskHTTPEnumVO.SUCCESS.getCode();
                     }
-                    return groupBuyNotifyService.groupBuyNotify(notifyTaskEntity.getNotifyUrl(), notifyTaskEntity.getParameterJson());
                 } finally {
                     if (lock.isLocked() && lock.isHeldByCurrentThread()) {
                         lock.unlock();

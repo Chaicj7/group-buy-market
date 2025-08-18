@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
 @Service
@@ -28,6 +30,9 @@ public class TradeSettlementOrderService implements ITradeSettlementOrderService
     private BusinessLinkedList<TradeSettlementRuleCommandEntity, TradeSettlementRuleDynamicContext, TradeSettlementRuleFilterBackEntity> tradeSettlementRuleFilter;
     @Resource
     private ITradePort tradePort;
+
+    @Resource
+    private ThreadPoolExecutor threadPoolExecutor;
 
     @Override
     public TradePaySettlementEntity settlementMarketPayOrder(TradePaySuccessEntity tradePaySuccessEntity) throws Exception {
@@ -50,7 +55,7 @@ public class TradeSettlementOrderService implements ITradeSettlementOrderService
                 .status(tradeSettlementRuleFilterBackEntity.getStatus())
                 .validStartTime(tradeSettlementRuleFilterBackEntity.getValidStartTime())
                 .validEndTime(tradeSettlementRuleFilterBackEntity.getValidEndTime())
-                .notifyUrl(tradeSettlementRuleFilterBackEntity.getNotifyUrl())
+                .notifyConfigVO(tradeSettlementRuleFilterBackEntity.getNotifyConfigVO())
                 .build();
 
         // 构建聚合对象
@@ -61,10 +66,18 @@ public class TradeSettlementOrderService implements ITradeSettlementOrderService
                 .build();
 
         // 拼团交易结算
-        boolean isNotify = repository.settlementMarketPayOrder(settlementAggregate);
-        if (isNotify) {
-            Map<String, Integer> notifyResultMap = execSettlementNotifyJob(tradeSettlementRuleFilterBackEntity.getTeamId());
-            log.info("回调通知拼团完结 result:{}", JSON.toJSONString(notifyResultMap));
+        NotifyTaskEntity notifyTaskEntity = repository.settlementMarketPayOrder(settlementAggregate);
+        if (notifyTaskEntity != null) {
+            threadPoolExecutor.execute(() -> {
+                Map<String, Integer> notifyResultMap = null;
+                try {
+                    notifyResultMap = execSettlementNotifyJob(notifyTaskEntity);
+                    log.info("回调通知拼团完结 result:{}", JSON.toJSONString(notifyResultMap));
+                } catch (Exception e) {
+                    log.error("回调通知拼团完结失败 result:{}", JSON.toJSONString(notifyResultMap), e);
+                    throw new AppException(e.getMessage());
+                }
+            });
         }
 
         // 返回结算信息 - 公司中开发这样的流程时候，会根据外部需要进行值的设置
@@ -89,6 +102,12 @@ public class TradeSettlementOrderService implements ITradeSettlementOrderService
         log.info("拼团交易-执行结算通知回调，指定 teamId:{}", teamId);
         List<NotifyTaskEntity> notifyTaskEntityList = repository.queryUnExecutedNotifyTaskList(teamId);
         return execSettlementNotifyJob(notifyTaskEntityList);
+    }
+
+    @Override
+    public Map<String, Integer> execSettlementNotifyJob(NotifyTaskEntity notifyTaskEntity) throws Exception {
+        log.info("拼团交易-执行结算通知回调，指定 teamId:{} notifyTaskEntity:{}", notifyTaskEntity.getTeamId(), JSON.toJSONString(notifyTaskEntity));
+        return execSettlementNotifyJob(Collections.singletonList(notifyTaskEntity));
     }
 
     private Map<String, Integer> execSettlementNotifyJob(List<NotifyTaskEntity> notifyTaskEntityList) throws Exception {

@@ -7,6 +7,7 @@ import com.chaicj.domain.trade.model.aggregate.GroupBuyOrderAggregate;
 import com.chaicj.domain.trade.model.aggregate.GroupBuyTeamSettlementAggregate;
 import com.chaicj.domain.trade.model.entity.*;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
+import com.chaicj.domain.trade.model.valobj.NotifyTypeEnumVO;
 import com.chaicj.domain.trade.model.valobj.TradeOrderStatusEnumVO;
 import com.chaicj.infrastructure.dao.GroupBuyActivityDao;
 import com.chaicj.infrastructure.dao.GroupBuyOrderDao;
@@ -25,6 +26,7 @@ import com.chaicj.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,9 @@ public class TradeOrderRepository implements ITradeOrderRepository {
     private NotifyTaskDao notifyTaskDao;
     @Resource
     private DCCService dccService;
+
+    @Value("${spring.rabbitmq.config.producer.topic_team_success.routing_key}")
+    private String topic_team_success;
 
     @Override
     public MarketPayOrderEntity queryNoPayMarketPayOrderByOutTradeNo(String userId, String outOrderNo) {
@@ -83,6 +88,7 @@ public class TradeOrderRepository implements ITradeOrderRepository {
         UserEntity userEntity = groupBuyOrderAggregate.getUserEntity();
         PayActivityEntity activityEntity = groupBuyOrderAggregate.getActivityEntity();
         PayDiscountEntity discountEntity = groupBuyOrderAggregate.getDiscountEntity();
+        NotifyConfigVO notifyConfigVO = discountEntity.getNotifyConfigVO();
         Integer userTakeOrderCount = groupBuyOrderAggregate.getUserTakeOrderCount();
 
         String teamId = activityEntity.getTeamId();
@@ -108,7 +114,8 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                     .status(TradeOrderStatusEnumVO.CREATE.getCode())
                     .validStartTime(currentDate)
                     .validEndTime(calendar.getTime())
-                    .notifyUrl(discountEntity.getNotifyUrl())
+                    .notifyType(notifyConfigVO.getNotifyType().getCode())
+                    .notifyUrl(notifyConfigVO.getNotifyUrl())
                     .build();
             groupBuyOrderDao.insert(groupBuyOrder);
         } else {
@@ -193,15 +200,20 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                 .status(GroupBuyOrderEnumVO.valueOf(groupBuyOrder.getStatus()))
                 .validStartTime(groupBuyOrder.getValidStartTime())
                 .validEndTime(groupBuyOrder.getValidEndTime())
-                .notifyUrl(groupBuyOrder.getNotifyUrl())
+                .notifyConfigVO(NotifyConfigVO.builder()
+                        .notifyType(NotifyTypeEnumVO.valueOf(groupBuyOrder.getNotifyType()))
+                        .notifyUrl(groupBuyOrder.getNotifyUrl())
+                        .notifyMQ(topic_team_success)
+                        .build())
                 .build();
     }
 
 //    @Transactional(timeout = 500)
     @Override
-    public boolean settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate) {
+    public NotifyTaskEntity settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate) {
         UserEntity userEntity = settlementAggregate.getUserEntity();
         GroupBuyTeamEntity groupBuyTeamEntity = settlementAggregate.getGroupBuyTeamEntity();
+        NotifyConfigVO notifyConfigVO = groupBuyTeamEntity.getNotifyConfigVO();
         TradePaySuccessEntity tradePaySuccessEntity = settlementAggregate.getTradePaySuccessEntity();
 
         // 1. 更新拼团订单明细状态
@@ -234,7 +246,9 @@ public class TradeOrderRepository implements ITradeOrderRepository {
             NotifyTask notifyTask = NotifyTask.builder()
                     .activityId(groupBuyTeamEntity.getActivityId())
                     .teamId(groupBuyTeamEntity.getTeamId())
-                    .notifyUrl(groupBuyTeamEntity.getNotifyUrl())
+                    .notifyType(notifyConfigVO.getNotifyType().getCode())
+                    .notifyMQ(notifyConfigVO.getNotifyMQ())
+                    .notifyUrl(notifyConfigVO.getNotifyUrl())
                     .notifyCount(0)
                     .notifyStatus(0)
                     .parameterJson(JSON.toJSONString(new HashMap<String, Object>() {{
@@ -243,9 +257,17 @@ public class TradeOrderRepository implements ITradeOrderRepository {
                     }}))
                     .build();
             notifyTaskDao.insert(notifyTask);
-            return true;
+            return NotifyTaskEntity.builder()
+                    .teamId(groupBuyTeamEntity.getTeamId())
+                    .notifyType(notifyConfigVO.getNotifyType().getCode())
+                    .notifyMQ(notifyConfigVO.getNotifyMQ())
+                    .notifyUrl(notifyConfigVO.getNotifyUrl())
+                    .notifyCount(notifyTask.getNotifyCount())
+                    .notifyStatus(notifyTask.getNotifyStatus())
+                    .parameterJson(notifyTask.getParameterJson())
+                    .build();
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -253,12 +275,11 @@ public class TradeOrderRepository implements ITradeOrderRepository {
         List<NotifyTask> notifyTaskList = notifyTaskDao.queryGroupBuySuccessNotifyList();
         if (CollectionUtils.isEmpty(notifyTaskList)) return new ArrayList<>();
         return notifyTaskList.stream().map(notifyTask -> NotifyTaskEntity.builder()
-                .id(notifyTask.getId())
                 .teamId(notifyTask.getTeamId())
-                .activityId(notifyTask.getActivityId())
+                .notifyType(notifyTask.getNotifyType())
+                .notifyMQ(notifyTask.getNotifyMQ())
                 .notifyUrl(notifyTask.getNotifyUrl())
                 .notifyCount(notifyTask.getNotifyCount())
-                .notifyStatus(notifyTask.getNotifyStatus())
                 .parameterJson(notifyTask.getParameterJson())
                 .build()).collect(Collectors.toList());
     }
@@ -288,12 +309,11 @@ public class TradeOrderRepository implements ITradeOrderRepository {
         List<NotifyTask> notifyTaskList = notifyTaskDao.queryUnExecutedNotifyTaskList(teamId);
         if (CollectionUtils.isEmpty(notifyTaskList)) return new ArrayList<>();
         return notifyTaskList.stream().map(notifyTask -> NotifyTaskEntity.builder()
-                .id(notifyTask.getId())
                 .teamId(notifyTask.getTeamId())
-                .activityId(notifyTask.getActivityId())
+                .notifyType(notifyTask.getNotifyType())
+                .notifyMQ(notifyTask.getNotifyMQ())
                 .notifyUrl(notifyTask.getNotifyUrl())
                 .notifyCount(notifyTask.getNotifyCount())
-                .notifyStatus(notifyTask.getNotifyStatus())
                 .parameterJson(notifyTask.getParameterJson())
                 .build()).collect(Collectors.toList());
     }

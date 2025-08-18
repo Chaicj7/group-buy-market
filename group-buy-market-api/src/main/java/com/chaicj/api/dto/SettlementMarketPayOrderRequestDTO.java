@@ -17,5 +17,4 @@ public class SettlementMarketPayOrderRequestDTO {
     private String outTradeNo;
     /** 外部交易时间 */
     private Date outTradeTime;
-    private String notifyUrl;
 }

@@ -13,6 +13,7 @@ import com.chaicj.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.chaicj.domain.activity.service.IIndexGroupBuyMarketService;
 import com.chaicj.domain.trade.model.entity.*;
 import com.chaicj.domain.trade.model.valobj.GroupBuyProgressVO;
+import com.chaicj.domain.trade.model.valobj.NotifyTypeEnumVO;
 import com.chaicj.domain.trade.service.ITradeLockOrderService;
 import com.chaicj.domain.trade.service.ITradeSettlementOrderService;
 import com.chaicj.types.enums.ResponseCode;
@@ -48,10 +49,10 @@ public class MarketTradeController implements IMarketTradeService {
             String source = requestDTO.getSource();
             String channel = requestDTO.getChannel();
             String outTradeNo = requestDTO.getOutTradeNo();
-            String notifyUrl = requestDTO.getNotifyUrl();
+            LockMarketPayOrderRequestDTO.NotifyConfigVO notifyConfig = requestDTO.getNotifyConfig();
 
             log.info("营销交易锁单:{} LockMarketPayOrderRequestDTO:{}", userId, JSON.toJSONString(requestDTO));
-            if (StringUtils.isBlank(userId) || StringUtils.isBlank(source) || StringUtils.isBlank(channel) || StringUtils.isBlank(goodsId) || StringUtils.isBlank(goodsId) || null == activityId || StringUtils.isBlank(notifyUrl)) {
+            if (StringUtils.isBlank(userId) || StringUtils.isBlank(source) || StringUtils.isBlank(channel) || StringUtils.isBlank(goodsId) || StringUtils.isBlank(goodsId) || null == activityId || ("HTTP".equals(notifyConfig.getNotifyType()) && StringUtils.isBlank(notifyConfig.getNotifyUrl()))) {
                 return Response.<LockMarketPayOrderResponseDTO>builder()
                         .code(ResponseCode.ILLEGAL_PARAMETER.getCode())
                         .info(ResponseCode.ILLEGAL_PARAMETER.getInfo())
@@ -125,7 +126,13 @@ public class MarketTradeController implements IMarketTradeService {
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
                             .payPrice(trialBalanceEntity.getPayPrice())
                             .outTradeNo(outTradeNo)
-                            .notifyUrl(notifyUrl)
+                            .notifyConfigVO(
+                                    NotifyConfigVO.builder()
+                                            .notifyType(NotifyTypeEnumVO.valueOf(notifyConfig.getNotifyType()))
+                                            .notifyMQ(notifyConfig.getNotifyMQ())
+                                            .notifyUrl(notifyConfig.getNotifyUrl())
+                                            .build()
+                            )
                             .build());
             log.info("交易锁单记录(新):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));
             return Response.<LockMarketPayOrderResponseDTO>builder()
@@ -172,7 +179,6 @@ public class MarketTradeController implements IMarketTradeService {
                     .userId(requestDTO.getUserId())
                     .outTradeNo(requestDTO.getOutTradeNo())
                     .outTradeTime(requestDTO.getOutTradeTime())
-                    .notifyUrl(requestDTO.getNotifyUrl())
                     .build());
 
             SettlementMarketPayOrderResponseDTO responseDTO = SettlementMarketPayOrderResponseDTO.builder()

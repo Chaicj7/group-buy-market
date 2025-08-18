@@ -11,12 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotifyTaskEntity {
 
-    private Long id;
-    /** 活动ID */
-    private Long activityId;
     /** 拼单组队ID */
     private String teamId;
-    /** 回调接口 */
+    /**
+     * 回调类型
+     */
+    private String notifyType;
+    /**
+     * 回调消息
+     */
+    private String notifyMQ;
+    /**
+     * 回调接口
+     */
     private String notifyUrl;
     /** 回调次数 */
     private Integer notifyCount;

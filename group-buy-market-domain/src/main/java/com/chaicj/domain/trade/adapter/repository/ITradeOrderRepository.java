@@ -31,7 +31,7 @@ public interface ITradeOrderRepository {
 
     GroupBuyTeamEntity queryGroupBuyTeamByTeamId(String teamId);
 
-    boolean settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate);
+    NotifyTaskEntity settlementMarketPayOrder(GroupBuyTeamSettlementAggregate settlementAggregate);
 
     List<NotifyTaskEntity> queryGroupBuySuccessNotifyList();
 

@@ -42,6 +42,8 @@ public class GroupBuyOrder {
     private Date validStartTime;
     /** 有效结束时间 */
     private Date validEndTime;
+    /** 回调类型（HTTP、MQ） */
+    private String notifyType;
     /**回调地址*/
     private String notifyUrl;
     /** 创建时间 */
