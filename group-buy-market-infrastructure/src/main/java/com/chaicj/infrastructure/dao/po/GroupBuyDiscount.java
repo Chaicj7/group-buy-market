@@ -21,7 +21,7 @@ public class GroupBuyDiscount {
     /**
      * 折扣ID
      */
-    private Long discountId;
+    private String discountId;
 
     /**
      * 折扣名称
@@ -62,4 +62,8 @@ public class GroupBuyDiscount {
      * 更新时间
      */
     private Date updateTime;
+
+    public static String getCacheKey(String discountId) {
+        return "group_buy_discount:" + discountId;
+    }
 }

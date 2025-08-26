@@ -88,4 +88,7 @@ public class GroupBuyActivity {
      */
     private Date updateTime;
 
+    public static String getCacheKey(Long activityId) {
+        return "group_buy_activity_" + activityId;
+    }
 }

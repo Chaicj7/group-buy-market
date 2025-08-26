@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class ActivityRepository implements IActivityRepository {
+public class ActivityRepository extends AbstractRepository implements IActivityRepository {
 
     @Resource
     private SkuDao skuDao;
@@ -50,10 +50,12 @@ public class ActivityRepository implements IActivityRepository {
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
 
-        GroupBuyActivity groupBuyActivityRes = groupBuyActivityDao.queryValidGroupBuyActivityId(activityId);
+        GroupBuyActivity groupBuyActivityRes = getFromRedisOrDB(GroupBuyActivity.getCacheKey(activityId),
+                () -> groupBuyActivityDao.queryValidGroupBuyActivityId(activityId));
         if (null == groupBuyActivityRes) return null;
 
-        GroupBuyDiscount discount = groupBuyDiscountDao.queryGroupBuyActivityDiscountByDiscountId(groupBuyActivityRes.getDiscountId());
+        GroupBuyDiscount discount = getFromRedisOrDB(GroupBuyDiscount.getCacheKey(groupBuyActivityRes.getDiscountId()),
+                () -> groupBuyDiscountDao.queryGroupBuyActivityDiscountByDiscountId(groupBuyActivityRes.getDiscountId()));
         if (null == discount) return null;
 
         GroupBuyDiscountVO groupBuyDiscountVO = GroupBuyDiscountVO.builder()

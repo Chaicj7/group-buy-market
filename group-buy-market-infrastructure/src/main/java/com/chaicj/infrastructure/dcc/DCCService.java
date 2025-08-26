@@ -2,6 +2,7 @@ package com.chaicj.infrastructure.dcc;
 
 import com.chaicj.types.annotations.DCCValue;
 import com.chaicj.types.common.Constants;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class DCCService {
     @DCCValue("scBlacklist:s02c02")
     private String scBlacklist;
 
+    @DCCValue("cacheOpenSwitch:0")
+    private String cacheOpenSwitch;
+
     public boolean isDowngradeSwitch() {
         return "1".equals(downgradeSwitch);
     }
@@ -36,5 +40,12 @@ public class DCCService {
     public Boolean isSCBlackIntercept(String source, String channel) {
         List<String> list = Arrays.asList(scBlacklist.split(Constants.SPLIT));
         return list.contains(source + channel);
+    }
+
+    /**
+     * 缓存开启开关，true为开启，1为关闭
+     */
+    public Boolean isCacheOpenSwitch() {
+        return "0".equals(cacheOpenSwitch);
     }
 }

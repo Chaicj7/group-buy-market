@@ -331,7 +331,6 @@ public class TradeOrderRepository implements ITradeOrderRepository {
         long occupy = redisService.incr(teamStockKey) + 1;
 
         if (occupy > target + recoveryCount) {
-            redisService.setAtomicLong(teamStockKey, target);
             return false;
         }
         // 1. 给每个产生的值加锁为兜底设计，虽然incr操作是原子的，基本不会产生一样的值。但在实际生产中，遇到过集群的运维配置问题，以及业务运营配置数据问题，导致incr得到的值相同。
