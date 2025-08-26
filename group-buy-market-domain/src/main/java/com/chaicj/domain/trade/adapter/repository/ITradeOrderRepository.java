@@ -44,4 +44,8 @@ public interface ITradeOrderRepository {
     int updateNotifyTaskStatusError(String teamId);
 
     List<NotifyTaskEntity> queryUnExecutedNotifyTaskList(String teamId);
+
+    boolean occupyTeamStock(String teamStockKey, String recoveryTeamStockKey, Integer target, Integer validTime);
+
+    void recoveryTeamStock(String recoveryTeamStockKey, Integer validTime);
 }
